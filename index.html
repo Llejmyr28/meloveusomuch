@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Yes or No • Confession Edition</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+      color: #333;
+      background: linear-gradient(135deg, #ffb6c1, #98fb98);
+      transition: all 0.4s ease;
+    }
+    .card {
+      width: 90%;
+      max-width: 500px;
+      padding: 40px;
+      text-align: center;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: float 2s ease-in-out infinite alternate;
+    }
+    @keyframes float {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+    h1 {
+      font-size: 1.6em;
+      margin-bottom: 30px;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    button {
+      font-size: 18px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    button:hover {
+      transform: scale(1.1);
+    }
+    #yesBtn {
+      background: #4CAF50;
+      color: #fff;
+    }
+    #noBtn {
+      background: #f44336;
+      color: #fff;
+      position: relative;
+    }
+
+    /* Broken state */
+    body.broken {
+      background: #000 !important;
+      font-family: monospace;
+      color: #ff0000 !important;
+      animation: glitch 0.5s infinite;
+    }
+    body.broken .card {
+      background: #111;
+      box-shadow: 0 0 20px red;
+      animation: shake 0.4s infinite;
+    }
+    @keyframes glitch {
+      0% { transform: translate(1px, 1px); }
+      50% { transform: translate(-1px, -1px); }
+      100% { transform: translate(1px, -1px); }
+    }
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0); }
+      25% { transform: translate(-1px, 2px) rotate(-1deg); }
+      50% { transform: translate(-3px, -1px) rotate(1deg); }
+      75% { transform: translate(2px, 3px) rotate(0); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="question">Hey… can I ask you something?</h1>
+    <div class="buttons">
+      <button id="yesBtn">Yes</button>
+      <button id="noBtn">No</button>
+    </div>
+  </div>
+
+  <!-- 🔊 Audio -->
+  <audio id="errorSound" src="error.mp3"></audio>
+  <audio id="bgMusic" src="The Black Skirts - EVERYTHING.mp3"></audio>
+
+  <script>
+    const questions = [
+      "Hey… can I ask you something?",
+      "Do you like spending time with me?",
+      "Do I make you smile sometimes?",
+      "Would you say I'm kinda cute?",
+      "Do you think we have something special?",
+      "Do you feel butterflies too?",
+      "Are you thinking what I'm thinking?",
+      "So… will you let me be the one to make you smile every day? ❤️"
+    ];
+
+    const qEl = document.getElementById("question"),
+          yes = document.getElementById("yesBtn"),
+          no  = document.getElementById("noBtn"),
+          errSound = document.getElementById("errorSound"),
+          bgMusic  = document.getElementById("bgMusic");
+
+    let idx = 0, noClicks = 0, maxNo = 5;
+
+    no.addEventListener("click", () => {
+      noClicks++;
+      const x = Math.random() * 300 - 150;
+      const y = Math.random() * 200 - 100;
+      no.style.transform = `translate(${x}px, ${y}px)`;
+
+      if (noClicks >= maxNo) {
+        document.body.classList.add("broken");
+        qEl.textContent = "ERROR! SYSTEM FAILURE!";
+        errSound.currentTime = 0;
+        errSound.play();
+      }
+    });
+
+    yes.addEventListener("click", () => {
+      noClicks = 0;
+      document.body.classList.remove("broken");
+      no.style.transform = "translate(0, 0)";
+      document.body.style.background = "linear-gradient(135deg, #ffb6c1, #98fb98)";
+      document.body.style.color = "#333";
+      errSound.pause();
+      errSound.currentTime = 0;
+
+      if (idx < questions.length - 1) {
+        idx++;
+        qEl.textContent = questions[idx];
+      } else {
+        qEl.textContent = "So… will you let me be the one to make you smile every day? ❤️";
+        yes.style.display = "none";
+        no.style.display = "none";
+        bgMusic.play();
+      }
+    });
+  </script>
+</body>
+</html>
