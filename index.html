@@ -2,157 +2,297 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Yes or No • Confession Edition</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Segoe UI', sans-serif;
-      color: #333;
-      background: linear-gradient(135deg, #ffb6c1, #98fb98);
-      transition: all 0.4s ease;
-    }
-    .card {
-      width: 90%;
-      max-width: 500px;
-      padding: 40px;
-      text-align: center;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      animation: float 2s ease-in-out infinite alternate;
-    }
-    @keyframes float {
-      from { transform: translateY(0); }
-      to { transform: translateY(-10px); }
-    }
-    h1 {
-      font-size: 1.6em;
-      margin-bottom: 30px;
-    }
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-    button {
-      font-size: 18px;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-    button:hover {
-      transform: scale(1.1);
-    }
-    #yesBtn {
-      background: #4CAF50;
-      color: #fff;
-    }
-    #noBtn {
-      background: #f44336;
-      color: #fff;
-      position: relative;
+    /* ─── RESET & BASE ─────────────────────────────────── */
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      overflow:hidden;min-height:100vh;display:flex;justify-content:center;align-items:center;
+      font-family:'Segoe UI',sans-serif;color:#333;background:linear-gradient(135deg,#ffb6c1 0%,#ffd2dc 25%,#c0ffbf 75%,#98fb98 100%);
+      transition:background .6s ease;-webkit-tap-highlight-color:transparent;
     }
 
-    /* Broken state */
-    body.broken {
-      background: #000 !important;
-      font-family: monospace;
-      color: #ff0000 !important;
-      animation: glitch 0.5s infinite;
+    /* ─── HEARTS ───────────────────────────────────────── */
+    .heart,.broken-heart{position:fixed;width:22px;height:22px;transform:rotate(45deg);animation:floatHeart 9s linear infinite;pointer-events:none;opacity:.85}
+    .heart{background:pink}
+    .heart::before,.heart::after,.broken-heart::before,.broken-heart::after{content:"";position:absolute;width:22px;height:22px;border-radius:50%}
+    .heart::before{top:-11px;left:0;background:pink}.heart::after{left:-11px;top:0;background:pink}
+    .broken-heart{background:transparent}
+    .broken-heart::before{top:-11px;left:0;background:#e63946;transform:rotate(-12deg);clip-path:polygon(0 0,100% 0,100% 100%,70% 75%,78% 60%,55% 55%,40% 35%,30% 60%,0 100%)}
+    .broken-heart::after{left:-11px;top:0;background:#e63946;transform:rotate(12deg);clip-path:polygon(0 0,100% 0,100% 100%,78% 60%,68% 40%,50% 55%,35% 80%,0 100%)}
+    @keyframes floatHeart{0%{transform:translateY(0) rotate(45deg);opacity:.9}100%{transform:translateY(-110vh) rotate(45deg);opacity:0}}
+
+    /* ─── STARS ─────────────────────────────────────────── */
+    .star{position:fixed;width:3px;height:3px;background:#fff;border-radius:50%;opacity:0;animation:twinkle 4s ease-in-out infinite}
+    @keyframes twinkle{0%,100%{opacity:0}50%{opacity:.8}}
+
+    /* ─── CARD ─────────────────────────────────────────── */
+    .card{width:90%;max-width:520px;padding:48px;text-align:center;z-index:2;background:linear-gradient(135deg,#ffffff 0%,#ffeafd 100%);border-radius:24px;box-shadow:0 12px 32px rgba(0,0,0,.25);animation:fadeSlide 1s ease forwards,float 3s ease-in-out infinite alternate}
+    @keyframes fadeSlide{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes float{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+
+    h1{font-size:1.7em;margin-bottom:34px;min-height:70px;line-height:1.32}
+    .buttons{display:flex;justify-content:center;gap:26px;flex-wrap:wrap}
+    button{font-size:18px;padding:14px 32px;border:none;border-radius:14px;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease;line-height:1.3}
+    button:hover{transform:scale(1.08);box-shadow:0 0 10px rgba(0,0,0,.25)}
+    #yesBtn{background:#45c462;color:#fff;animation:pulse 1.7s infinite ease-in-out}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+    #noBtn{background:#ff5c5c;color:#fff;position:relative}
+
+    /* ─── MOBILE ADJUSTMENTS ───────────────────────────── */
+    @media(max-width:600px){
+      h1{font-size:1.35em;margin-bottom:24px}
+      button{font-size:16px;padding:12px 26px}
+      .card{padding:32px;width:94%}
     }
-    body.broken .card {
-      background: #111;
-      box-shadow: 0 0 20px red;
-      animation: shake 0.4s infinite;
+
+    /* ─── BROKEN STATE ─────────────────────────────────── */
+    body.broken{background:#0b0b0b!important;color:#ff5555!important}
+    body.broken .card{background:#111;border:2px solid #ff5555;animation:shake .45s infinite;box-shadow:0 0 25px rgba(255,0,0,.45)}
+    @keyframes shake{0%{transform:translate(1px,1px) rotate(0)}25%{transform:translate(-2px,3px) rotate(-1deg)}50%{transform:translate(-3px,-2px) rotate(1deg)}75%{transform:translate(2px,3px) rotate(0)}100%{transform:translate(1px,-2px) rotate(-1deg)}}
+    body.broken .buttons button:hover{box-shadow:none}
+    body.broken .heart{display:none}body:not(.broken) .broken-heart{display:none}
+
+    .emotion{margin-top:22px;font-size:22px;font-weight:bold;opacity:0;animation:fadeIn 1s ease-in forwards}
+    @keyframes fadeIn{to{opacity:1}}
+    .gif-overlay{position:fixed;width:120px;height:auto;z-index:0;pointer-events:none;opacity:.5;animation:fadeInSlow 3s ease-in forwards}
+    @keyframes fadeInSlow{from{opacity:0}to{opacity:.5}}
+
+    /* ─── LOVE OVERLAY ─────────────────────────────────── */
+    #loveOverlay{
+      position:fixed;top:0;left:0;width:100vw;height:100vh;
+      background:transparent;pointer-events:none;
+      display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
+      z-index:3;opacity:0;transition:opacity 2s ease;
     }
-    @keyframes glitch {
-      0% { transform: translate(1px, 1px); }
-      50% { transform: translate(-1px, -1px); }
-      100% { transform: translate(1px, -1px); }
+    .loveText{
+      font-size:1.25rem;
+      animation:bounceLove 1.5s infinite ease-in-out;
+      color:hotpink;font-weight:bold;opacity:.85;
+      user-select:none;margin:6px;
     }
-    @keyframes shake {
-      0% { transform: translate(1px, 1px) rotate(0); }
-      25% { transform: translate(-1px, 2px) rotate(-1deg); }
-      50% { transform: translate(-3px, -1px) rotate(1deg); }
-      75% { transform: translate(2px, 3px) rotate(0); }
-      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    @keyframes bounceLove{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+    /* Question stays above overlay */
+    h1#question{z-index:4;position:relative}
+
+    @keyframes shakeButton {
+      0%{transform:translateX(0)}
+      25%{transform:translateX(-5px)}
+      50%{transform:translateX(5px)}
+      75%{transform:translateX(-5px)}
+      100%{transform:translateX(0)}
     }
+    .no-shake{animation:shakeButton .3s ease}
   </style>
 </head>
 <body>
   <div class="card">
-    <h1 id="question">Hey… can I ask you something?</h1>
+    <h1 id="question"></h1>
     <div class="buttons">
       <button id="yesBtn">Yes</button>
       <button id="noBtn">No</button>
     </div>
+    <div id="emotionDisplay" class="emotion"></div>
   </div>
 
-  <!-- 🔊 Audio -->
-  <audio id="errorSound" src="error.mp3"></audio>
-  <audio id="bgMusic" src="The Black Skirts - EVERYTHING.mp3"></audio>
+  <div id="loveOverlay"></div>
+
+  <audio id="errorSound" preload="auto"><source src="error.mp3" type="audio/mpeg"></audio>
+  <audio id="bgMusic" preload="auto"><source src="The Black Skirts - EVERYTHING.mp3" type="audio/mpeg"></audio>
 
   <script>
-    const questions = [
-      "Hey… can I ask you something?",
-      "Do you like spending time with me?",
-      "Do I make you smile sometimes?",
-      "Would you say I'm kinda cute?",
-      "Do you think we have something special?",
-      "Do you feel butterflies too?",
-      "Are you thinking what I'm thinking?",
-      "So… will you let me be the one to make you smile every day? ❤️"
-    ];
+  /* ─── QUESTIONS ─────────────────────────────────────── */
+  const questions=[
+    "Hey… can I ask you something?",
+    "Do you like spending time with me?",
+    "Do I make you smile sometimes?",
+    "Would you say I'm kinda cute?",
+    "Do you think we have something special?",
+    "Do you feel butterflies too?",
+    "Are you thinking what I'm thinking?",
+    "We already love each other, but I want to do this right..."
+  ];
 
-    const qEl = document.getElementById("question"),
-          yes = document.getElementById("yesBtn"),
-          no  = document.getElementById("noBtn"),
-          errSound = document.getElementById("errorSound"),
-          bgMusic  = document.getElementById("bgMusic");
+  /* ─── DATA ──────────────────────────────────────────── */
+  const sadE=["｡°(°¯᷄◠¯᷅°)°｡","૮ ⸝⸝o̴̶̷᷄ ·̭ o̴̶̷̥᷅⸝⸝ ྀིა","(╥‸╥)"];
+  const loveE=["⸜(｡˃ ᵕ ˂ )⸝♡","(ෆ˙ᵕ˙ෆ)♡","♡(˃͈ ˂͈ )"];
+  const sadImgs=["download.png","download1.png"];
+  const loveImgs=["download6.png","emoji-love-meme-doodle14.gif"];
 
-    let idx = 0, noClicks = 0, maxNo = 5;
+  const noTexts=[
+    "Are you sure? 😢",
+    "Really sure? 🥺",
+    "Don't break my heart 💔",
+    "Please reconsider 😢",
+    "I'm crying inside 😭",
+    "Just say yes already 😩",
+    "Okay now you're just being mean 😿",
+    "You're killing me 😵",
+    "Last chance! 🥹",
+    "Fine... I give up 😔"
+  ];
 
-    no.addEventListener("click", () => {
-      noClicks++;
-      const x = Math.random() * 300 - 150;
-      const y = Math.random() * 200 - 100;
-      no.style.transform = `translate(${x}px, ${y}px)`;
+  /* ─── ELEMENTS ──────────────────────────────────────── */
+  const qEl=document.getElementById('question');
+  const yesBtn=document.getElementById('yesBtn');
+  const noBtn=document.getElementById('noBtn');
+  const errSound=document.getElementById('errorSound');
+  const bgMusic=document.getElementById('bgMusic');
+  const emoBox=document.getElementById('emotionDisplay');
+  const loveOverlay=document.getElementById('loveOverlay');
 
-      if (noClicks >= maxNo) {
-        document.body.classList.add("broken");
-        qEl.textContent = "ERROR! SYSTEM FAILURE!";
-        errSound.currentTime = 0;
-        errSound.play();
-      }
-    });
+  /* ─── STATE ─────────────────────────────────────────── */
+  let qIndex=0;
+  let finished=false;
+  let noClickCount=0;
+  const maxNo=5;    // break after 5 hardcore “no” clicks
 
-    yes.addEventListener("click", () => {
-      noClicks = 0;
-      document.body.classList.remove("broken");
-      no.style.transform = "translate(0, 0)";
-      document.body.style.background = "linear-gradient(135deg, #ffb6c1, #98fb98)";
-      document.body.style.color = "#333";
-      errSound.pause();
-      errSound.currentTime = 0;
+  /* ─── TYPEWRITER ────────────────────────────────────── */
+  function typeTxt(text){
+    qEl.textContent='';
+    emoBox.textContent='';
+    let i=0;
+    const iv=setInterval(()=>{
+      qEl.textContent+=text.charAt(i);
+      if(++i>=text.length)clearInterval(iv);
+    },33);
+  }
 
-      if (idx < questions.length - 1) {
-        idx++;
-        qEl.textContent = questions[idx];
-      } else {
-        qEl.textContent = "So… will you let me be the one to make you smile every day? ❤️";
-        yes.style.display = "none";
-        no.style.display = "none";
-        bgMusic.play();
-      }
-    });
+  /* ─── HEARTS STREAM ─────────────────────────────────── */
+  setInterval(()=>{
+    const cls=document.body.classList.contains('broken')?'broken-heart':'heart';
+    const h=document.createElement('div');
+    h.className=cls;
+    h.style.left=Math.random()*100+"vw";
+    h.style.animationDuration=6+Math.random()*6+"s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),10000);
+  },500);
+
+  /* ─── UTIL ─────────────────────────────────────────── */
+  function vibrate(ms){navigator.vibrate?.(ms);}
+
+  /* ─── NO BUTTON HANDLER ─────────────────────────────── */
+  noBtn.addEventListener('click',()=>{
+    if(finished) return;
+
+    noClickCount++;
+    vibrate(70);
+
+    // change text
+    if(noClickCount<noTexts.length){
+      noBtn.textContent=noTexts[noClickCount];
+    }else{
+      noBtn.style.display="none";
+    }
+
+    // shake + dodge
+    noBtn.classList.add('no-shake');
+    const dx=Math.random()*300-150;
+    const dy=Math.random()*200-100;
+    noBtn.style.transform=`translate(${dx}px,${dy}px)`;
+    setTimeout(()=>noBtn.classList.remove('no-shake'),300);
+
+    // broken state
+    if(noClickCount>=maxNo){
+      document.body.classList.add('broken');
+      qEl.textContent='ERROR! SYSTEM FAILURE!';
+      emoBox.textContent=sadE[Math.floor(Math.random()*sadE.length)];
+      errSound.currentTime=0; errSound.play();
+      sadImgs.forEach(src=>{
+        const el=document.createElement('img');
+        el.src=src;
+        el.className='gif-overlay';
+        el.style.left=Math.random()*100+"vw";
+        el.style.top=Math.random()*100+"vh";
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),6000);
+      });
+    }
+  });
+
+  /* ─── YES BUTTON HANDLER ────────────────────────────── */
+  yesBtn.addEventListener('click',()=>{
+    if(finished) return;
+
+    // reset No‑button every time “Yes” is clicked
+    noClickCount=0;
+    noBtn.textContent="No";
+    noBtn.style.transform="translate(0,0)";
+
+    document.body.classList.remove('broken');
+    errSound.pause(); errSound.currentTime=0;
+    emoBox.textContent='';
+    vibrate(40);
+
+    if(qIndex<questions.length-1){
+      qIndex++;
+      typeTxt(questions[qIndex]);
+    }else{
+      finished=true;
+
+      const fullMsg="We already love each other, but I want to do this right. Let me court you not because I have to, but because you deserve to be pursued, cherished, and reminded every day how much you mean to me.";
+      typeTxt(fullMsg);
+
+      yesBtn.style.display='none';
+      noBtn.style.display='none';
+
+      bgMusic.play();
+      emoBox.textContent=loveE[Math.floor(Math.random()*loveE.length)];
+
+      loveImgs.forEach(src=>{
+        const el=document.createElement('img');
+        el.src=src;
+        el.className='gif-overlay';
+        el.style.left=Math.random()*100+"vw";
+        el.style.top=Math.random()*100+"vh";
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),6000);
+      });
+
+      launchConfetti();
+      showLoveOverlay();
+    }
+  });
+
+  /* ─── CONFETTI ─────────────────────────────────────── */
+  function launchConfetti(){
+    for(let i=0;i<120;i++){
+      const c=document.createElement('div');
+      c.style.position='fixed';
+      c.style.width='6px'; c.style.height='6px';
+      c.style.background=`hsl(${Math.random()*360},80%,60%)`;
+      c.style.left=Math.random()*100+"vw";
+      c.style.top=Math.random()*100+"vh";
+      c.style.opacity=.8;
+      c.style.transform=`rotate(${Math.random()*360}deg)`;
+      c.style.transition='transform 1.2s ease-out, top 1.2s ease-out, opacity 1.2s ease-out';
+      document.body.appendChild(c);
+      requestAnimationFrame(()=>{
+        c.style.top='-20vh';
+        c.style.transform+=` translateY(-100vh) scale(0.5)`;
+        c.style.opacity=0;
+      });
+      setTimeout(()=>c.remove(),1400);
+    }
+  }
+
+  /* ─── LOVE OVERLAY ─────────────────────────────────── */
+  function showLoveOverlay(){
+    loveOverlay.innerHTML='';
+    loveOverlay.style.opacity=1;
+    for(let i=0;i<80;i++){
+      const txt=document.createElement('div');
+      txt.className='loveText';
+      txt.textContent='MELOVEYOU 💖';
+      loveOverlay.appendChild(txt);
+    }
+  }
+
+  /* ─── INIT ─────────────────────────────────────────── */
+  typeTxt(questions[0]);
   </script>
 </body>
 </html>
